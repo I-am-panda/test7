@@ -1,0 +1,574 @@
+<!DOCTYPE html >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script th:src="@{/js/jquery-1.10.2.js}"></script>
+    <script th:src="@{/layui/layui.all.js}"></script>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+</head>
+<body style=" height: 500px">
+
+<!--查询表单-->
+<fieldset class="table-search-fieldset">
+    <legend>搜索信息</legend>
+    <div style="margin: 10px 10px 10px 10px">
+        <form class="layui-form layui-form-pane" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="username" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-inline">
+                        <select id="sex" name="sex">
+                            <option ></option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">手机号码</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="phonenumber" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+<!--                    id='demo4'用于再次点击提交按钮返回所有记录信息-->
+                    <button id="demo4" type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                </div>
+                <div class="layui-inline">
+                    <button id="demo3" type="reset" class="layui-btn layui-btn-primary">
+                        <i class="layui-icon">&#xe669;</i>重置
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</fieldset>
+
+<!--表格数据-->
+<table id="demo" lay-filter="test"></table>
+<script type="text/html" id="mytoolbar">
+    <button type="button" class="layui-btn layui-btn-sm" lay-event="saveUser"><i class="layui-icon layui-icon-addition"></i>添加</button>
+    <button type="button" class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delUser"><i class="layui-icon layui-icon-delete"></i>批量删除</button>
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn  layui-btn-normal layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="resetPassword">重置密码</a>
+</script>
+
+<!--==========添加用户form表单===========-->
+<div class="layui-form"  id="userSaveForm" style="display:none;">
+    <form class="layui-form layui-form-pane" action="" style="padding-top: 20px;padding-left: 60px">
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录名</label>
+            <div class="layui-input-inline">
+<!--                验证方法nameExist用于检验所添加的登录名是否已经存在-->
+                <input value="admin" type="text" name="loginName" lay-verify="required|nameExist" placeholder="请输入登录名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input value="dou" type="text" name="userName" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input value="123456" type="password" name="password" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input value="535848470@qq.com" type="text" name="email" lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-inline">
+                <input value="18420014154" type="text" name="phonenumber" lay-verify="phone" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-inline">
+                <select  name="deptId">
+                    <option value="103">研发部门</option>
+                    <option value="104">市场部门</option>
+                    <option value="105">测试部门</option>
+                    <option value="106">财务部门</option>
+                    <option value="107">运维部门</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <select  name="sex">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-inline">
+                <select  name="role">
+                    <option value="1">管理员</option>
+                    <option value="2">普通角色</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" >
+            <div class="layui-input-block" style="margin-left:60px;margin-top: 20px">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1" style="margin-left:0">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--==========修改用户form表单===========-->
+<div class="layui-form"  id="userEditForm" style="display:none;">
+    <form class="layui-form layui-form-pane" lay-filter="formTest" action="" style="padding-top: 20px;padding-left: 60px">
+        <input type="hidden" id="userid" name="userId">
+        <div class="layui-form-item">
+            <label class="layui-form-label">登录名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="loginName" lay-verify="required" placeholder="请输入登录名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="userName" lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input  type="text" name="email" lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-inline">
+                <input  type="text" name="phonenumber" lay-verify="phone" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-inline">
+                <select  name="deptId">
+                    <option value="103">研发部门</option>
+                    <option value="104">市场部门</option>
+                    <option value="105">测试部门</option>
+                    <option value="106">财务部门</option>
+                    <option value="107">运维部门</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline">
+                <select  name="sex">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-inline">
+                <select  name="role">
+                    <option value="1">管理员</option>
+                    <option value="2">普通角色</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item" >
+            <div class="layui-input-block" style="margin-left:60px;margin-top: 20px">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="editUserForm" style="margin-left:0">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--==========重置密码form表单===========-->
+<div class="layui-form"  id="passwordForm" style="display:none;">
+    <form class="layui-form layui-form-pane"  action="" style="padding-top: 20px;padding-left: 60px">
+        <input type="hidden" id="id" name="userId">
+        <div class="layui-form-item">
+            <label class="layui-form-label">新密码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="newpassword" lay-verify="required" placeholder="请输入新密码" autocomplete="off" class="layui-input" >
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">确认密码</label>
+            <div class="layui-input-inline">
+            <input type="password" name="password" lay-verify="required|confirmPass" placeholder="请确认新密码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" >
+            <div class="layui-input-block" style="margin-left:60px;margin-top: 20px">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo2" style="margin-left:0">立即提交</button>
+                <button  type="reset" class="layui-btn layui-btn-primary" >重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+<script>
+    var form = layui.form;
+    var table = layui.table;
+
+    // 搜索表单取值
+    form.on('submit(data-search-btn)', function(data){
+        var loginName1 = data.field.username;
+        var phonenumber1 = data.field.phonenumber;
+        var userStatus = data.field.sex;
+        table.reload('testReload', {
+            url: 'searchUser'
+            ,where: {
+                loginName : loginName1,
+                phonenumber : phonenumber1,
+                sex: userStatus
+            }
+        });
+        return false;
+    })
+
+    /*
+    搜索表单
+    点击重置按钮（demo3）时自动点击提交按钮提交空值从而获取所有记录信息
+    */
+    $('#demo3').click(function () {
+        form.on('submit(data-search-btn)', function(data){
+            // return true;
+        })
+        $('#demo4').trigger("click");
+    });
+
+    form.render();//渲染表单
+    //第一个实例
+    var myTable = table.render({
+        id: 'testReload',
+        elem : '#demo',
+        height : 520,
+        url : 'showUser' //数据接口
+        ,
+        page : true //开启分页
+        ,
+        limit : 8,
+        limits : [ 5,8,10,12],
+        toolbar : '#mytoolbar' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+        ,
+        cols : [ [ //表头
+            {
+                field : 'userId',
+                title : '用户编号',
+                width : "10%",
+                sort : true,
+                fixed : 'left',
+                checkbox : true
+            }, {
+                field : 'loginName',
+                title : '登录名',
+                width : "10%",
+                sort : true,
+                align:'center',
+                fixed : 'left'
+            }, {
+                field : 'userName',
+                title : '用户名',
+                sort : true,
+                align:'center',
+                width : "10%"
+            }, {
+                field : 'email',
+                title : '邮箱',
+                sort : true,
+                align:'center',
+                width : "20%"
+            }, {
+                field : 'phonenumber',
+                title : '手机号码',
+                sort : true,
+                align:'center',
+                width : "20%"
+            }, {
+                field : 'sex',
+                title : '性别',
+                sort : true,
+                align:'center',
+                width : "10%"
+            }
+            , {
+                title : '操作',
+                width : "20%",
+                align:'center',
+                toolbar : '#barDemo'
+            } ] ]
+    });
+    //监听头工具栏事件
+    table
+        .on(
+            'toolbar(test)',
+            function(obj) {
+                var checkStatus = table.checkStatus(obj.config.id), data = checkStatus.data; //获取选中的数据
+                var ids=[];
+                switch (obj.event) {
+                    case 'saveUser':
+                        layer.open({
+                            type : 1,
+                            content : $("#userSaveForm"),
+                            icon : 1,
+                            title : "添加用户",
+                            area : [ '450px', '620px' ]
+                        })
+                        break;
+                    case 'delUser':
+                        if (data.length === 0) {
+                            layer.msg('请选择一行');
+                        } else {
+                            console.log(data)
+                            layer.confirm('确定要删除吗?', function(index) {
+                                //获取所有需要删除的userid，保存在ids的数组中
+                                for (var i = 0; i < data.length; i++) {
+                                    ids.push(data[i].userId);
+                                }
+                                $.ajax({
+                                    url : 'delUser',//地址
+                                    dataType : 'json',//数据类型
+                                    type : 'POST',//类型
+                                    data : {
+                                        ids : JSON.stringify(ids)
+                                    },//将数组ids转换成json字符串
+                                    //请求成功
+                                    success : function(result) {
+                                        if (result.code == 0) {
+                                            //关闭弹出层
+                                            layer.close(index);
+                                            //显示删除成功消息
+                                            layer.msg(result.message, {
+                                                icon : 1
+                                            })
+                                            //重新加载数据表格
+                                            myTable.reload();
+                                        } else {
+                                            //关闭弹出层
+                                            layer.close(index);
+                                            layer.msg(result.message, {
+                                                icon : 5
+                                            })
+                                        }
+                                    }
+                                });
+
+                            });
+                        }
+                        break;
+                }
+                ;
+            });
+
+    //监听提交
+    form.on('submit(demo1)', function(data) {
+        //数据的提交，ajax方式
+        $.ajax({
+            url : 'saveUser',//地址
+            dataType : 'json',//数据类型
+            type : 'POST',//类型
+            data : data.field,
+            //请求成功
+            success : function(result) {
+                if (result.code == 0) {
+                    //关闭弹出层
+                    layer.closeAll();
+                    //显示添加成功消息
+                    layer.msg(result.message, {
+                        icon : 1
+                    })
+                    //重新加载数据表格
+                    myTable.reload();
+                } else {
+                    //关闭弹出层
+                    layer.closeAll();
+                    layer.msg(result.message, {
+                        icon : 5
+                    })
+                }
+            }
+        });
+        return false;
+    });
+
+
+    form.on('submit(editUserForm)', function(data){
+        //数据的提交，ajax方式
+        $.ajax({
+            url: 'editUser',//地址
+            dataType: 'json',//数据类型
+            type: 'POST',//类型
+            data:data.field,
+            //请求成功
+            success: function (result) {
+                if(result.code==0){
+                    //关闭弹出层
+                    layer.closeAll();
+                    //显示添加成功消息
+                    layer.msg(result.message,{icon:1})
+                    //重新加载数据表格
+                    myTable.reload();
+                }else
+                {
+                    //关闭弹出层
+                    layer.closeAll();
+                    layer.msg(result.message,{icon:5})
+                }
+            }
+        });
+        return false;
+    });
+
+    // 添加自定义验证方法
+    form.verify({
+        confirmPass:function(value){
+            if($('input[name=newpassword]').val() !== value)
+                return '两次密码输入不一致！';
+        },
+        nameExist:function(value){
+            var value=value;
+            var message ='';
+            $.ajax({
+                url : 'searchLogin',//地址
+                dataType : 'json',//数据类型
+                /*sync默认是true，即为异步方式，
+                *异步：在异步模式下，当我们使用AJAX发送完请求后，可能还有代码需要执行。
+                *这个时候可能由于种种原因导致服务器还没有响应我们的请求，但是因为我们采用了异步执行方式，
+                *所有包含AJAX请求代码的函数中的剩余代码将继续执行。
+                *如果我们是将请求结果交由另外一个JS函数去处理的，那么，这个时候就好比两条线程同时执行一样。
+
+                同步：在同步模式下，当我们使用AJAX发送完请求后，后续还有代码需要执行，
+                我们同样将服务器响应交由另一个JS函数去处理，但是这时的代码执行情况是：
+                在服务器没有响应或者处理响应结果的JS函数还没有处理完成return时，
+                包含请求代码的函数的剩余代码是不能够执行的。就好比单线程一样，
+                请求发出后就进入阻塞状态，知道接触阻塞余下的代码才会继续执行。
+
+                *我们在发送AJAX请求后，还需要继续处理服务器的响应结果，
+                *如果这时我们使用异步请求模式同时未将结果的处理交由另一个JS函数进行处理。
+                *这时就有可能发生这种情况：异步请求的响应还没有到达，函数已经执行完了return语句了，
+                *这时将导致return的结果为空字符串*/
+
+                async: false, //改为同步请求
+                type : 'POST',//类型
+                data : {value:value},
+                success : function(result) {
+                    message =result.message;
+                }
+            });
+            if (message!='')
+            return message;
+        }
+    });
+
+    form.on('submit(demo2)', function(data){
+        //数据的提交，ajax方式
+        $.ajax({
+            url: 'editPassword',//地址
+            dataType: 'json',//数据类型
+            type: 'POST',//类型
+            data:data.field,
+            //请求成功
+            success: function (result) {
+                if(result.code==0){
+                    //关闭弹出层
+                    layer.closeAll();
+                    //显示添加成功消息
+                    layer.msg(result.message,{icon:1})
+                    //重新加载数据表格
+                    myTable.reload();
+                }else
+                {
+                    //关闭弹出层
+                    layer.closeAll();
+                    layer.msg(result.message,{icon:5})
+                }
+            }
+        });
+    });
+
+    //监听行工具事件
+    table.on('tool(test)', function(obj) { //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+        var ids=[];
+        var data = obj.data //获得当前行数据
+            , layEvent = obj.event; //获得 lay-event 对应的值
+        if (layEvent === 'resetPassword') {
+            $("#id").val(data.userId);
+            layer.open({
+                type : 1,
+                content : $("#passwordForm"),
+                icon : 1,
+                title : "重置密码",
+                area : [ '450px', '250px' ]
+            })
+        }
+        else if (layEvent === 'del') {
+            layer.confirm('真的删除行么', function(index) {
+                obj.del(); //删除对应行（tr）的DOM结构
+                ids.push(data.userId);
+                layer.close(index);
+                //向服务端发送删除指令
+                $.ajax({
+                    url : 'delUser',//地址
+                    dataType : 'json',//数据类型
+                    type : 'POST',//类型
+                    data : {
+                        ids : JSON.stringify(ids)
+                    },//将数组ids转换成json字符串
+                    //请求成功
+                    success : function(result) {
+                        if (result.code == 0) {
+                            //关闭弹出层
+                            layer.close(index);
+                            //显示删除成功消息
+                            layer.msg(result.message, {
+                                icon : 1
+                            })
+                            //重新加载数据表格
+                            myTable.reload();
+                        } else {
+                            //关闭弹出层
+                            layer.close(index);
+                            layer.msg(result.message, {
+                                icon : 5
+                            })
+                        }
+                    }
+                });
+            });
+        } else if (layEvent === 'edit') {
+            //填充修改用户的表单项
+            form.val("formTest",data);
+            layer.open({
+                type : 1,
+                content : $("#userEditForm"),
+                icon : 1,
+                title : "修改用户",
+                area : [ '450px', '580px' ]
+            })
+        }
+    });
+</script>
+</html>
